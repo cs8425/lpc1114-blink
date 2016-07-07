@@ -32,7 +32,7 @@ PROJECT = lpc1114_blink_led
 CORE = cortex-m0
 
 # linker script
-LD_SCRIPT = LPC11x14_10x_rom.ld
+LD_SCRIPT = LPC1114_30x_rom.ld
 
 # output folder (absolute or relative path, leave empty for in-tree compilation)
 OUT_DIR = out
@@ -85,7 +85,7 @@ AS_SRCS = $(wildcard $(patsubst %, %/*.$(AS_EXT), . $(SRCS_DIRS)))
 
 # optimization flags ("-O0" - no optimization, "-O1" - optimize, "-O2" -
 # optimize even more, "-Os" - optimize for size or "-O3" - optimize yet more) 
-OPTIMIZATION = -O2
+OPTIMIZATION = -Os
 
 # set to 1 to optimize size by removing unused code and data during link phase
 REMOVE_UNUSED = 1
@@ -128,10 +128,12 @@ endif
 CORE_FLAGS = -mcpu=$(CORE) -mthumb
 
 # flags for C++ compiler
-CXX_FLAGS = -std=$(CXX_STD) -g -ggdb3 -fno-rtti -fno-exceptions -fverbose-asm -Wa,-ahlms=$(OUT_DIR_F)$(notdir $(<:.$(CXX_EXT)=.lst))
+#CXX_FLAGS = -std=$(CXX_STD) -g -ggdb3 -fno-rtti -fno-exceptions -fverbose-asm -Wa,-ahlms=$(OUT_DIR_F)$(notdir $(<:.$(CXX_EXT)=.lst))
+CXX_FLAGS = -std=$(CXX_STD) -g -ggdb3 -fno-rtti -fno-exceptions -fverbose-asm
 
 # flags for C compiler
-C_FLAGS = -std=$(C_STD) -g -ggdb3 -fverbose-asm -Wa,-ahlms=$(OUT_DIR_F)$(notdir $(<:.$(C_EXT)=.lst))
+#C_FLAGS = -std=$(C_STD) -g -ggdb3 -fverbose-asm -Wa,-ahlms=$(OUT_DIR_F)$(notdir $(<:.$(C_EXT)=.lst))
+C_FLAGS = -std=$(C_STD) -g -ggdb3 -fverbose-asm
 
 # flags for assembler
 AS_FLAGS = -g -ggdb3 -Wa,-amhls=$(OUT_DIR_F)$(notdir $(<:.$(AS_EXT)=.lst))
@@ -166,11 +168,12 @@ DEPS = $(OBJS:.o=.d)
 INC_DIRS_F = -I. $(patsubst %, -I%, $(INC_DIRS))
 LIB_DIRS_F = $(patsubst %, -L%, $(LIB_DIRS))
 
-ELF = $(OUT_DIR_F)$(PROJECT).elf
-HEX = $(OUT_DIR_F)$(PROJECT).hex
-BIN = $(OUT_DIR_F)$(PROJECT).bin
-LSS = $(OUT_DIR_F)$(PROJECT).lss
-DMP = $(OUT_DIR_F)$(PROJECT).dmp
+ELF = $(PROJECT).elf
+HEX = $(PROJECT).hex
+BIN = $(PROJECT).bin
+LSS = $(PROJECT).lss
+DMP = $(PROJECT).dmp
+DASM = $(PROJECT)_dump.asm
 
 # format final flags for tools, request dependancies for C++, C and asm
 CXX_FLAGS_F = $(CORE_FLAGS) $(OPTIMIZATION) $(CXX_WARNINGS) $(CXX_FLAGS)  $(CXX_DEFS) -MD -MP -MF $(OUT_DIR_F)$(@F:.o=.d) $(INC_DIRS_F)
@@ -180,6 +183,7 @@ LD_FLAGS_F = $(CORE_FLAGS) $(LD_FLAGS) $(LIB_DIRS_F)
 
 #contents of output directory
 GENERATED = $(wildcard $(patsubst %, $(OUT_DIR_F)*.%, bin d dmp elf hex lss lst map o))
+GENERATED += $(ELF) $(HEX) $(BIN) $(LSS) $(DMP) $(DASM)
 
 #=============================================================================#
 # make all
@@ -259,6 +263,12 @@ $(LSS) : $(ELF)
 	@echo 'Creating extended listing: $(LSS)'
 	$(OBJDUMP) -S $< > $@
 	@echo ' '
+
+#-----------------------------------------------------------------------------#
+# disassemble the .elf file
+#-----------------------------------------------------------------------------#
+dump: $(PROJECT).elf
+	$(OBJDUMP) -S --disassemble $(ELF) > $(DASM)
 
 #-----------------------------------------------------------------------------#
 # print the size of the objects and the .elf file

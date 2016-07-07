@@ -7,7 +7,7 @@
 * compiler: arm-none-eabi-gcc (Sourcery CodeBench Lite 2011.09-69) 4.6.1
 *
 * description:
-* Linker script for LPC11(C)14/30x (32kB Flash, 4kB SRAM).
+* Linker script for LPC11(C)14/30x (32kB Flash, 8kB SRAM).
 ******************************************************************************/
 
 SEARCH_DIR(.);
@@ -45,7 +45,7 @@ PROVIDE(__process_stack_size = __process_stack_size);
 MEMORY
 {
 	rom (rx)	: org = 0x00000000, len = 32k
-	ram (rwx)	: org = 0x10000000, len = 4k
+	ram (rwx)	: org = 0x10000000, len = 8k
 }
 
 __rom_start = ORIGIN(rom);
