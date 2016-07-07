@@ -10,10 +10,14 @@
 * compiler: arm-none-eabi-gcc (Sourcery CodeBench Lite 2011.09-69) 4.6.1
 ******************************************************************************/
 
-#ifndef CONFIG_H_
-#define CONFIG_H_
+#ifndef _CONFIG_H_
+#define _CONFIG_H_
 
-#include "hdr/hdr_gpio_masked_access.h"
+#include <stdint.h>
+
+#include "LPC11xx.h"
+#include "system_LPC11xx.h"
+#include "cmsis.h"
 
 /*
 +=============================================================================+
@@ -22,16 +26,8 @@
 */
 
 #define CRYSTAL								12000000	///< quartz crystal resonator which is connected to the chip
-#define FREQUENCY							50000000	///< desired target frequency of the core
+#define FREQUENCY							48000000	///< desired target frequency of the core
 
-#define LED_GPIO							LPC_GPIO1	///< GPIO port to which the LED is connected
-
-#define LED_pin								8			///< pin number of the LED
-
-#define LED									(1 << LED_pin)
-
-/// "variable" to manipulate the pin directly via GPIO masked access
-#define LED_gma								gpio_masked_access_t GPIO_MASKED_ACCESS(LED_GPIO, LED_pin)
 
 /*
 +=============================================================================+
@@ -51,7 +47,4 @@
 +=============================================================================+
 */
 
-/******************************************************************************
-* END OF FILE
-******************************************************************************/
-#endif /* CONFIG_H_ */
+#endif

@@ -60,7 +60,7 @@ LIBS =
 
 # additional directories with source files (absolute or relative paths to
 # folders with source files, current folder is always included)
-SRCS_DIRS =
+SRCS_DIRS = ./inc
 
 # extension of C++ files
 CXX_EXT = cpp
@@ -102,7 +102,7 @@ CXX_STD = gnu++98
 
 # C language standard ("c89" / "iso9899:1990", "iso9899:199409",
 # "c99" / "iso9899:1999", "gnu89" - default, "gnu99")
-C_STD = gnu89
+C_STD = gnu99
 
 #=============================================================================#
 # set the VPATH according to SRCS_DIRS
@@ -165,7 +165,7 @@ C_OBJS = $(addprefix $(OUT_DIR_F), $(notdir $(C_SRCS:.$(C_EXT)=.o)))
 AS_OBJS = $(addprefix $(OUT_DIR_F), $(notdir $(AS_SRCS:.$(AS_EXT)=.o)))
 OBJS = $(AS_OBJS) $(C_OBJS) $(CXX_OBJS) $(USER_OBJS)
 DEPS = $(OBJS:.o=.d)
-INC_DIRS_F = -I. $(patsubst %, -I%, $(INC_DIRS))
+INC_DIRS_F = -I. $(patsubst %, -I%, $(INC_DIRS)) -I./inc
 LIB_DIRS_F = $(patsubst %, -L%, $(LIB_DIRS))
 
 ELF = $(PROJECT).elf
@@ -189,7 +189,7 @@ GENERATED += $(ELF) $(HEX) $(BIN) $(LSS) $(DMP) $(DASM)
 # make all
 #=============================================================================#
 
-all : make_output_dir $(ELF) $(LSS) $(DMP) $(HEX) $(BIN) print_size
+all : make_output_dir $(ELF) $(HEX) $(BIN) print_size
 
 # make object files dependent on Makefile
 $(OBJS) : Makefile
@@ -269,6 +269,12 @@ $(LSS) : $(ELF)
 #-----------------------------------------------------------------------------#
 dump: $(PROJECT).elf
 	$(OBJDUMP) -S --disassemble $(ELF) > $(DASM)
+
+#-----------------------------------------------------------------------------#
+# debug dump
+#-----------------------------------------------------------------------------#
+
+debug : $(ELF) $(DMP) $(LSS) dump
 
 #-----------------------------------------------------------------------------#
 # print the size of the objects and the .elf file
